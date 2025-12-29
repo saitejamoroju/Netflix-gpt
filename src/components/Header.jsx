@@ -1,6 +1,37 @@
-import React from "react";
+import React, { useEffect } from "react";
+  import { onAuthStateChanged } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { addUser, removeUser } from "../utils/userSlice";
+import { auth } from "../utils/firebase";
+import { useNavigate } from "react-router-dom";
+import GPT_App_Routes from "./Routes";
+
+
+
 
 const Header = ({ isSignOut, onClick }) => {
+const dispatch=useDispatch();
+const navigate=useNavigate();
+
+
+  useEffect(() => {
+    const subscribe=onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const { displayName, phoneNumber, photoURL, email, uid } = user;
+        dispatch(
+          addUser({ displayName, phoneNumber, photoURL, email, uid})
+        );
+         navigate(GPT_App_Routes.browse);
+      } else {
+        dispatch(removeUser());
+        navigate(GPT_App_Routes.home);
+      }
+    });
+    // unsubscribe when component unmounts 
+    return ()=> subscribe();
+  }, []);
+
+  
   return (
     <div className="w-screen absolute px-8 py-2 bg-gradient-to-b from-black z-20 flex justify-between">
       <img

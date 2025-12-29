@@ -7,13 +7,11 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
-import GPT_App_Routes from "./Routes";
+
 import { addUser } from "../utils/userSlice";
 import { useDispatch } from "react-redux";
 
 const Login = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isSignIn, setIsSignIn] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -47,7 +45,6 @@ const Login = () => {
     )
       .then((userCredential) => {
         const user = userCredential.user;
-        navigate(GPT_App_Routes.browse);
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -70,7 +67,6 @@ const Login = () => {
         console.log("logging ", displayName, phoneNumber, photoURL);
         dispatch(addUser({ displayName, phoneNumber, photoURL, email, uid }));
         console.log("logging inside then");
-        navigate(GPT_App_Routes.browse);
       })
       .catch((error) => {
         const errorMessage = error.message;
@@ -89,7 +85,6 @@ const Login = () => {
     if (message) return;
     if (!isSignIn) {
       handleSignUpfunc();
-      // handleUpdateUser();
     } else {
       handleSignInFunc();
     }
